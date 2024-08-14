@@ -31,8 +31,8 @@ jobs:
         username: root
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          mkdir -p /root/ci_cd
-          echo "${{ secrets.ENV_FILE }}" > /root/ci_cd/.env
+          mkdir -p /root/mebel-house
+          echo "${{ secrets.ENV_FILE }}" > /root/mebel-house/.env
 
     - name: Execute remote commands via SSH
       uses: appleboy/ssh-action@v1.0.3
@@ -41,10 +41,10 @@ jobs:
         username: root
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /root/ci_cd
+          cd /root/mebel-house
           git init
-          git pull https://github.com/farzot/ci_cd_5.git
+          git pull https://github.com/farzot/Mebel-house.git
           npm install
           npm run build
-          pm2 reload jenkins || pm2 start dist/main.js --name "jenkins"
+          pm2 reload Mebel-house || pm2 start dist/main.js --name "Mebel-house"
           pm2 save
