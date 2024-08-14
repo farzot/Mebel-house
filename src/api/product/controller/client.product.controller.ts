@@ -98,8 +98,8 @@ export class ClientProductController {
         return this.productService.uploadProductFromExcel(body, jsonData, lang);
     }
 
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @RolesDecorator(Roles.COMPANY_ADMIN, Roles.COMPANY_MANAGER, Roles.MERCHANDISER)
+    // @UseGuards(JwtAuthGuard, RolesGuard)
+    // @RolesDecorator(Roles.COMPANY_ADMIN, Roles.COMPANY_MANAGER, Roles.MERCHANDISER)
     @Get()
     async findAll(
         @CurrentLanguage() lang: string,
