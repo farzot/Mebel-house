@@ -1,0 +1,50 @@
+name: CI and Deploy to Server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.10.0'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Upload .env file to the server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: root
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: ".env"
+        target: "/root/ci_cd/.env"
+
+    - name: Execute remote commands via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: root
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          mkdir -p /root/mebel-house
+          cd /root/mebel-house
+          git init
+          git pull https://github.com/farzot/ci_cd_5.git
+          npm install
+          npm run build
+          pm2 reload mebel-house || pm2 start dist/main.js --name "mebel-house"
+          pm2 save
